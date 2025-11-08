@@ -1,8 +1,79 @@
-import React from "react";
+import React, { useState } from "react";
 import FooterVector from "../assets/FooterVector.png"; // top-right mandala
 import FooterVector1 from "../assets/FooterVector1.png"; // bottom-left mandala
 
 const ContactSection = () => {
+  // States for input values
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    message: "",
+  });
+
+  // States for UI feedback
+  const [loading, setLoading] = useState(false);
+  const [successMsg, setSuccessMsg] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
+
+  // Handle input changes
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // Email validation function
+  const validateEmail = (email) => {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
+  };
+
+  // Handle form submission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setErrorMsg("");
+    setSuccessMsg("");
+
+    const { name, email, phone, message } = formData;
+
+    // Front-end Validation
+    if (!name || !email || !message) {
+      setErrorMsg("Please fill out all required fields (*)");
+      return;
+    }
+
+    if (!validateEmail(email)) {
+      setErrorMsg("Please enter a valid email address.");
+      return;
+    }
+
+    // Loading state
+    setLoading(true);
+
+    try {
+      const response = await fetch("https://vernanbackend.ezlab.in/api/contact-us/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Form submitted:", data);
+        setSuccessMsg("Form Submitted ✅");
+        setFormData({ name: "", email: "", phone: "", message: "" }); // Reset form
+      } else {
+        setErrorMsg("Something went wrong! Please try again.");
+      }
+    } catch (error) {
+      setErrorMsg("Network error. Please check your connection.");
+    }
+
+    setLoading(false);
+  };
+
   return (
     <section className="relative bg-[#FFF7F2] py-20 px-6 md:px-20 overflow-hidden">
       {/* Decorative Mandala Corners */}
@@ -22,7 +93,7 @@ const ContactSection = () => {
         <div className="w-full md:w-1/2 text-center md:text-left">
           <p className="text-[#0E1F33] text-base md:text-lg leading-relaxed max-w-md">
             Whether you have an idea, a question, or simply want to explore how
-            V can work together, V’re just a message away. <br />
+            we can work together, we’re just a message away. <br />
             Let’s catch up over coffee ☕ <br />
             Great stories always begin with a good conversation.
           </p>
@@ -38,23 +109,35 @@ const ContactSection = () => {
           </p>
 
           {/* FORM */}
-          <form className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
             <input
               type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
               placeholder="Your name*"
               className="w-full p-2 border border-gray-300 focus:outline-none focus:border-[#E25D34]"
             />
             <input
               type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
               placeholder="Your email*"
               className="w-full p-2 border border-gray-300 focus:outline-none focus:border-[#E25D34]"
             />
             <input
               type="tel"
+              name="phone"
+              value={formData.phone}
+              onChange={handleChange}
               placeholder="Phone"
               className="w-full p-2 border border-gray-300 focus:outline-none focus:border-[#E25D34]"
             />
             <textarea
+              name="message"
+              value={formData.message}
+              onChange={handleChange}
               placeholder="Your message*"
               rows="4"
               className="w-full p-2 border border-gray-300 focus:outline-none focus:border-[#E25D34]"
@@ -62,15 +145,33 @@ const ContactSection = () => {
 
             <button
               type="submit"
-              className="bg-[#E25D34] text-white px-6 py-2 rounded-full shadow hover:bg-[#cf4b24] transition-all"
+              disabled={loading}
+              className={`bg-[#E25D34] text-white px-6 py-2 rounded-full shadow hover:bg-[#cf4b24] transition-all ${
+                loading ? "opacity-70 cursor-not-allowed" : ""
+              }`}
             >
-              Submit
+              {loading ? "Submitting..." : "Submit"}
             </button>
           </form>
 
+          {/* Success or Error Message */}
+          {successMsg && (
+            <p className="text-green-600 mt-4 text-center animate-fade-in">
+              {successMsg}
+            </p>
+          )}
+          {errorMsg && (
+            <p className="text-red-600 mt-4 text-center animate-fade-in">
+              {errorMsg}
+            </p>
+          )}
+
           {/* Contact Info */}
           <div className="mt-6 flex flex-col md:flex-row items-center justify-between text-[#E25D34] font-medium text-sm md:text-base">
-            <a href="mailto:vernita@varnanfilms.co.in" className="hover:underline">
+            <a
+              href="mailto:vernita@varnanfilms.co.in"
+              className="hover:underline"
+            >
               vernita@varnanfilms.co.in
             </a>
             <span className="hidden md:block border-l border-[#E25D34] h-5 mx-3"></span>
