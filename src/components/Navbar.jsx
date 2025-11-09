@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Mail } from "lucide-react";
-
+import { Link } from "react-router-dom";
+import VFilmsLogo from "../assets/VFilmsLogo.png"; // your VFilms logo
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -8,6 +9,7 @@ const Navbar = () => {
     <nav className="flex justify-between items-center px-6 md:px-12 py-4 bg-[#FFFCFC] shadow-sm relative">
       {/* Left Side (Logo placeholder or text) */}
       <div className="flex items-center space-x-2">
+        <img src={VFilmsLogo} alt="VFilms Logo" className="h-8" />
         {/* Add brand name or logo here */}
       </div>
 
@@ -17,20 +19,18 @@ const Navbar = () => {
           menuOpen ? "flex top-16" : "hidden md:flex"
         }`}
       >
-        <li className="hover:text-orange-500 cursor-pointer">Services</li>
-        <li className="hover:text-orange-500 cursor-pointer">Their Stories</li>
-        <li className="hover:text-orange-500 cursor-pointer">Our Story</li>
-        <li className="hover:text-orange-500 cursor-pointer">Varnan</li>
-        <li className="hover:text-orange-500 cursor-pointer">About Us</li>
+       <Link to="/services"><li className="hover:text-orange-500 cursor-pointer">Services</li></Link>
+       
+        <Link to="/about"><li className="hover:text-orange-500 cursor-pointer">About Us</li></Link>
       </ul>
 
       {/* Right Side */}
       <div className="flex items-center space-x-4">
         {/* Let's Talk Button */}
-        <button className="hidden md:flex items-center space-x-2 bg-[#F15A29] text-white px-5 py-2 rounded-full font-medium shadow hover:bg-[#e34d1c] transition-all">
+       <Link to="/contact"><button className="hidden md:flex items-center space-x-2 bg-[#F15A29] text-white px-5 py-2 rounded-full font-medium shadow hover:bg-[#e34d1c] transition-all">
           <span>Let’s Talk</span>
           <Mail size={18} />
-        </button>
+        </button></Link>
 
         {/* Toggle Icon (changes between X and hamburger brush) */}
         <button
